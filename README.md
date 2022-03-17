@@ -1,5 +1,12 @@
 # Analizador léxico
 
+Para poder correr el proyecto es necesario correr el script llamada lexico.sh de la siguiente manera:
+
+**./lexico.sh 
+
+En el cual obtiene o actualiza g++ para despues compilar el programa lexico.cpp el cual genera la salida en el archivo a.out y se correrá el proyecto.
+
+*o en caso de tener problemas compilar de la siguiente manera: g++ lexico.cpp, correr la salida ./a.out 
 
 ## Descripción
 Dada una gramática en EBNF, imprimir el listado de terminales y no terminales de la gramática.
