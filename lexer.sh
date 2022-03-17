@@ -4,6 +4,6 @@ apt-get install g++
 
 echo "First arg: $1"
 
-g++ ./lexico.cpp $1
+g++ ./lexico.cpp
 
-./a.out
+sudo ./a.out $1
