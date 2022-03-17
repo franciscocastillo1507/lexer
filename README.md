@@ -13,16 +13,9 @@ Ejemplo:
 
 
 goal -> A
-
 A -> ( A )
-
-
 A -> two
-
-
 two -> a
-
-
 two -> b
 
 *No se tiene la implementación con lectura de archivo por lo tanto solo se puede por entrada de usuario dentro de la consola (estipulado en la descripcion del proyecto)
