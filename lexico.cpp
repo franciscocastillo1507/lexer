@@ -10,7 +10,6 @@
 // Tecnologico de Monterrey Campus Qro
 // Compiladores (Primera parte)
 
-
 using namespace std;
 // Class Tag
 class Tag
@@ -145,21 +144,26 @@ void Scanner(string &filePath)
 {
 
     map<int, Token> words = map<int, Token>();
-    int line = 1;
+    int line = 0;
     char ch;
     bool isReadingWord = false;
     bool isReadingNumber = false;
     bool isReadingOperator = false;
-    int v = 0;
     string wordAux = "";
     string opAux = "";
+    int v = 0;
     int it = 0;
     map<string, Token> nonFinals;
     map<string, Token> finals;
     fstream fin(filePath, fstream::in);
+
     while (fin >> noskipws >> ch)
     {
-
+        if (line == 0)
+        {
+            line++;
+            continue;
+        }
         // first validation, skips tabs and count lines
         if (ch == '\t')
         {
@@ -346,31 +350,18 @@ void Scanner(string &filePath)
     cout << endl;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    string row;
-    cout << "Parameter needed are the number of rows to analize the productions" << endl;
-    cout << "Then the productions " << endl
-         << endl;
-    cout << "Example:\n5 \ngoal -> A\nA -> ( A )\nA -> two\ntwo -> a\ntwo -> b " << endl
-         << endl; 
-    cout << "----------------------------------------------------------------" << endl
-         << endl;
-    int rows = 0;
-    getline(cin, row);
-    rows = stoi(row);
-    string dataInput[rows];
-    string input;
-    string path = "./test.txt";
-    fstream my_file;
-    my_file.open(path, ios::out);
-    for (int i = 0; i < rows; i++)
+    if (argc != 2)
     {
-        getline(cin, input);
-        my_file << input;
-        my_file << endl;
+        cout << "Uso: Ver Repositorio para uso de este programa, lexico.cpp archivo1.txt" << endl;
+        return 0;
     }
-    my_file.close();
+    string arg = argv[1];
+    string path = "./" + arg;
+    fstream my_file;
+    my_file.open(path, ios::in);
     Scanner(path);
+    my_file.close();
     return 0;
 }
