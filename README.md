@@ -10,10 +10,19 @@ La lectura tanto de las producciones como el total de las mismas se hace desde l
 
 Ejemplo:
 5
+
+
 goal -> A
+
 A -> ( A )
+
+
 A -> two
+
+
 two -> a
+
+
 two -> b
 
 *No se tiene la implementación con lectura de archivo por lo tanto solo se puede por entrada de usuario dentro de la consola (estipulado en la descripcion del proyecto)
@@ -34,5 +43,7 @@ Los caracteres válidos para un identificador son [ A..Z, a..z, _, - ]. El símb
 Imprimir el conjunto de terminales y no terminales.
 
 Terminales: a, b, (, )
+
+
 No terminales: goal, A, two
 
