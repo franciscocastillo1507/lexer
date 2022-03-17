@@ -12,11 +12,11 @@ Ejemplo:
 5
 
 
-goal -> A
-A -> ( A )
-A -> two
-two -> a
-two -> b
+goal -> A<br />
+A -> ( A )<br />
+A -> two <br />
+two -> a <br />
+two -> b<br />
 
 *No se tiene la implementación con lectura de archivo por lo tanto solo se puede por entrada de usuario dentro de la consola (estipulado en la descripcion del proyecto)
 
