@@ -2,7 +2,7 @@
 
 Para poder correr el proyecto es necesario correr el script llamada lexico.sh de la siguiente manera:
 
-**./lexico.sh 
+**./lexico.sh**
 
 En el cual obtiene o actualiza g++ para despues compilar el programa lexico.cpp el cual genera la salida en el archivo a.out y se correrá el proyecto.
 
