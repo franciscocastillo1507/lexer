@@ -5,6 +5,12 @@
 #include <map>
 #include <list>
 
+// Author: Francisco Javier Castillo Hernandez
+// Date Release : 16/3/22
+// Tecnologico de Monterrey Campus Qro
+// Compiladores (Primera parte)
+
+
 using namespace std;
 // Class Tag
 class Tag
