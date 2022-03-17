@@ -1,6 +1,6 @@
 # Analizador léxico
 
-Para poder correr el proyecto es necesario correr el script llamada lexico.sh de la siguiente manera:
+Para poder correr el proyecto es necesario correr el script llamado lexico.sh de la siguiente manera:
 
 **./lexico.sh [nombre del archivo]**
 
@@ -19,6 +19,15 @@ La lectura tanto de las producciones como el total de las mismas se hace desde e
 
 Ejemplo:
 ./lexico.sh input1.txt
+
+input1.txt =
+
+5 <br>
+goal -> A<br>
+A -> ( A )<br>
+A -> two<br>
+two -> a<br>
+two -> b<br>
 
 La primera línea contiene un número entero, N, que indica el número de producciones a analizar. El formato de las producciones es el siguiente:
 
