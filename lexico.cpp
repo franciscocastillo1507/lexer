@@ -4,6 +4,9 @@
 #include <iostream>
 #include <map>
 #include <list>
+#include <vector>
+#include <set>
+#include <algorithm>
 
 // Author: Francisco Javier Castillo Hernandez
 // Date Release : 16/3/22
@@ -11,6 +14,7 @@
 // Compiladores (Primera parte)
 
 using namespace std;
+string initial = "";
 // Class Tag
 class Tag
 {
@@ -138,6 +142,401 @@ void clear(bool isReadingWord, bool isReadingNumber, string wordAux, int v, bool
     opAux = "";
     v = 0;
 }
+void print(std::vector<string> const &input)
+{
+    for (int i = 0; i < input.size(); i++)
+    {
+        std::cout << input.at(i) << ' ';
+    }
+}
+void printSet(std::set<string> const &input)
+{
+    for (auto it = input.begin(); it != input.end(); it++)
+        cout << *it << " ";
+}
+map<string, set<string> > foundFirsts(
+    map<string, vector<string> > production, map<string, set<string> > firsts, map<string, Token> finals)
+{
+    map<string, vector<string> >::iterator itr;
+    int i = 0;
+    for (itr = production.begin(); itr != production.end(); itr++)
+    {
+        if (i == 0)
+        {
+            i++;
+            continue;
+        }
+        map<string, vector<string> >::iterator itrFirstsNT;
+        set<string> firstVector;
+        vector<string> vectorFirst = itr->second;
+        bool isArrowOn = false;
+        string auxString = vectorFirst.front();
+        string pendingNF = "";
+
+        if (finals.find(auxString) != finals.end())
+        {
+            vector<string>::iterator itrAux;
+            map<string, Token>::iterator aux;
+            firstVector.insert(auxString);
+            isArrowOn = true;
+            for (itrAux = vectorFirst.begin(); itrAux != vectorFirst.end(); itrAux++)
+            {
+                auxString = *itrAux;
+                if (isArrowOn == false)
+                {
+                    if (finals.find(auxString) != finals.end())
+                    {
+                        firstVector.insert(auxString);
+                        isArrowOn = true;
+                    }else{
+                        if (auxString != "->")
+                        {
+                            pendingNF = auxString;
+                        }
+                    }
+                }
+                if (auxString == "->")
+                {
+                    auto nx = next(itrAux, 1);
+                    if(*nx == "->"){
+                        firstVector.insert("ϵ");
+                    }
+                    isArrowOn = false;
+                }
+            }
+            if(pendingNF != "")
+            {
+                if(pendingNF == ""){
+                    itrFirstsNT = production.find(auxString);
+                }else{
+                    auxString = pendingNF;
+                    itrFirstsNT = production.find(auxString);
+                }
+                vectorFirst = itrFirstsNT->second;
+                auxString = vectorFirst.front();
+                while (finals.find(auxString) == finals.end())
+                {
+                    itrFirstsNT = production.find(auxString);
+                    vectorFirst = itrFirstsNT->second;
+                    auxString = vectorFirst.front();
+                }
+                vector<string>::iterator itrAux2;
+                bool isSecArrowOn = false;
+                for (itrAux2 = vectorFirst.begin(); itrAux2 != vectorFirst.end(); itrAux2++)
+                {
+                    auxString = *itrAux2;
+
+                    if (isSecArrowOn == false)
+                    {
+                        if (finals.find(auxString) != finals.end())
+                        {
+                            firstVector.insert(auxString);
+                            isSecArrowOn = true;
+                        }
+                    }
+                    if (auxString == "->")
+                    {
+                        auto nx = next(itrAux, 1);
+                        if(*nx == "->"){
+                            firstVector.insert("ϵ");
+                        }
+                        isSecArrowOn = false;
+                    }
+                }
+        }
+            pair<string, set<string> > p1 = make_pair(itr->first, firstVector);
+            firsts.insert(p1);
+        }
+        else if(auxString != "->" ) 
+        {
+            firstVector.clear();
+            itrFirstsNT = production.find(auxString);
+            vectorFirst = itrFirstsNT->second;
+            auxString = vectorFirst.front();
+            bool isSecArrowOn = false;
+            if(auxString != itr->first){
+                while (finals.find(auxString) == finals.end())
+                {
+                    itrFirstsNT = production.find(auxString);
+                    vectorFirst = itrFirstsNT->second;
+                    auxString = vectorFirst.front();
+                }
+            }else{
+                isSecArrowOn = true;
+            }
+            
+            vector<string>::iterator itrAux2;
+            for (itrAux2 = vectorFirst.begin(); itrAux2 != vectorFirst.end(); itrAux2++)
+            {
+                auxString = *itrAux2;
+
+                if (isSecArrowOn == false)
+                {
+                    if (finals.find(auxString) != finals.end())
+                    {
+                        firstVector.insert(auxString);
+                        isSecArrowOn = true;
+                    }else{
+                        if (auxString != "->")
+                        {
+                            pendingNF = auxString;
+                        }
+                    }
+                }
+                if (auxString == "->")
+                {
+                    auto nx = next(itrAux2, 1);
+                    if(*nx == "->"){
+                        firstVector.insert("ϵ");
+                    }
+                    isSecArrowOn = false;
+                }
+            }
+            if(pendingNF != "")
+            {
+                if(pendingNF == ""){
+                    itrFirstsNT = production.find(auxString);
+                }else{
+                    auxString = pendingNF;
+                    itrFirstsNT = production.find(auxString);
+                }
+                vectorFirst = itrFirstsNT->second;
+                auxString = vectorFirst.front();
+                bool isSecArrowOn = false;
+                if(auxString != pendingNF){
+                    while (finals.find(auxString) == finals.end())
+                    {
+                        itrFirstsNT = production.find(auxString);
+                        vectorFirst = itrFirstsNT->second;
+                        auxString = vectorFirst.front();
+                    }
+                }else{
+                    auxString = vectorFirst.at(vectorFirst.size() - 2);
+                    itrFirstsNT = production.find(auxString);
+                    vectorFirst = itrFirstsNT->second;
+                }
+                vector<string>::iterator itrAux2;
+                for (itrAux2 = vectorFirst.begin(); itrAux2 != vectorFirst.end(); itrAux2++)
+                {
+                    auxString = *itrAux2;
+
+                    if (isSecArrowOn == false)
+                    {
+                        if (finals.find(auxString) != finals.end())
+                        {
+                            firstVector.insert(auxString);
+                            isSecArrowOn = true;
+                        }
+                    }
+                    if (auxString == "->")
+                    {
+                        auto nx = next(itrAux2, 1);
+                        if(*nx == "->"){
+                            firstVector.insert("ϵ");
+                        }
+                        isSecArrowOn = false;
+                    }
+                }
+        }
+            pair<string, set<string> > p1 = make_pair(itr->first, firstVector);
+            firsts.insert(p1);
+        }
+    }
+    return firsts;
+}
+
+map<string, Token> deleteDuplicates(map<string, Token> finals, map<string, Token> nonFinals)
+{
+
+    map<string, Token>::iterator itr;
+    map<string, Token>::iterator aux;
+    vector<string> duplicates;
+    vector<string>::iterator itr2;
+    for (itr = finals.begin(); itr != finals.end(); itr++)
+    {
+
+        if (nonFinals.find(itr->first) != nonFinals.end())
+        {
+            duplicates.push_back(itr->first);
+        }
+    }
+    for (itr2 = duplicates.begin(); itr2 != duplicates.end(); itr2++)
+    {
+        finals.erase(*itr2);
+    }
+    map<string, Token> returnFinals = finals;
+    return returnFinals;
+}
+map<string, set<string> > foundFollows(
+    map<string, vector<string> > production, map<string, set<string> > follows, map<string, set<string> > firsts, map<string, Token > nonFinals, map<string, Token > finals)
+{
+    map<string, vector<string> >::iterator itr;
+    map<string, string> auxFollows;
+    set<string> followsSet;
+    int i = 0;
+    // cout << "found: "<< initial << endl;
+    for (itr = production.begin(); itr != production.end(); itr++)
+    {
+
+        if (i == 0)
+        {
+            i++;
+            continue;
+        }
+        if(itr->first == initial){
+            followsSet.insert("$");
+            pair<string, set<string> > p1 = make_pair(itr->first, followsSet);
+            follows.insert(p1);
+            followsSet.clear();
+            i++;
+        }
+        vector<string> productionLine = itr->second;
+
+        // FORM B -> a A b | Follow(A) = First(b)
+        // Total number of productions and have the shape before mentioned, and index
+        
+        vector<string>::iterator itrVec;
+        int counter = 0;
+        int index = 0;
+        bool hasFormaAb = false;
+
+        for (itrVec = productionLine.begin(); itrVec != productionLine.end(); itrVec++)
+            {
+                if(*itrVec != "->"){
+                    counter++;
+                }else{
+                    counter = 0;
+                    hasFormaAb = false;
+                }
+                if(counter == 1){
+                    auto nx = next(itrVec, 1);
+                    if(*nx == "->" && nonFinals.find(*itrVec) != nonFinals.end()){
+                        // include in the other
+                        pair<string, string > p1 = make_pair(*itrVec,itr->first);
+                        auxFollows.insert(p1);
+                        
+                    }else{
+                        continue;
+                    }
+                }
+                if(counter == 2){
+                    if(nonFinals.find(*itrVec) != nonFinals.end()){
+                        hasFormaAb = true;
+                    }
+                    auto nx = next(itrVec, 1);
+                    if(*nx == "->"){
+                        // FORM B -> a A [e] | Follow(A) = Follow(B)
+                        // itr->first -> a *itrVec
+                        // Follow(*itrVec) -> Fol (itr->first)
+                        // hasEpsilon podemos ignorarlo
+                        pair<string, string > p1 = make_pair(*itrVec,itr->first);
+                        auxFollows.insert(p1);
+                        
+                    }else{
+                        continue;
+                    }
+                }
+                if(counter == 3 && hasFormaAb == true){
+                    // FORM B -> a A b | Follow(A) = First(b)
+                    if(itr->first == *itrVec){
+                        auto before = next(itrVec, -1);
+                        pair<string, string > p1 = make_pair(*before,itr->first);
+                        auxFollows.insert(p1);
+                        
+                        if(follows.find(*before) != follows.end()){
+                            set<string> foundFollowSet = firsts.find(*itrVec)->second;
+                            foundFollowSet.erase("ϵ");
+                            follows.find(*before)->second = foundFollowSet;
+                        }else{
+                            set<string> foundFollowSet = firsts.find(*itrVec)->second;
+                            foundFollowSet.erase("ϵ");
+                            pair<string, set<string> > p1 = make_pair(*before, foundFollowSet);
+                            follows.insert(p1);
+                            foundFollowSet.clear();
+                        }
+
+                    }
+                    else if (finals.find(*itrVec) != finals.end())
+                    {
+                        auto before = next(itrVec, -1);
+                        if(follows.find(*before) != follows.end()){
+                            set<string> foundFollowSet = follows.find(*before)->second;
+                            foundFollowSet.insert(*itrVec);
+                            foundFollowSet.erase("ϵ");
+                            follows.find(*before)->second = foundFollowSet;
+                        }else{
+                            followsSet.insert(*itrVec);
+                            followsSet.erase("ϵ");
+                            pair<string, set<string> > p1 = make_pair(itr->first, followsSet);
+                            follows.insert(p1);
+                            followsSet.clear();
+                        }
+                    }
+                }
+            }
+    }
+
+    //get first
+    map<string, string>::iterator itr5 = auxFollows.begin();
+    map<string, string>::iterator itr6;
+    int auxFollowsSize = auxFollows.size();
+    for (int i = 0; i < auxFollowsSize; i++){
+        // cout << "Map Key: " << itr5->first << ", v: " << itr5->second << endl;
+        auto it2 = follows.find(itr5->first);
+        set<string> finalSet;
+        if (it2 == follows.end()){
+            // cout << "Key: " << itr5->first << ", v: " << itr5->second << endl;
+            finalSet = follows.find(itr5->second)->second;
+            // printSet(finalSet);
+            // cout << endl;
+            pair<string, set<string> > p1 = make_pair(itr5->first, finalSet);
+            // cout << "Pair: " << itr5->first << endl;
+            // printSet(finalSet);
+            // cout << endl;
+            follows.insert(p1);
+        }else{
+            // cout << "KeyF: " << itr5->first << ", v: " << itr5->second << endl;
+            set<string> neutral = follows.find(itr5->first)->second;
+            neutral.erase("ϵ");
+            set<string> addFollow = follows.find(itr5->second)->second ;
+            addFollow.erase("ϵ");
+            set<string> finalSet;
+            set_union(neutral.begin(), neutral.end(),
+                    addFollow.begin(), addFollow.end(),
+                    inserter(finalSet, finalSet.begin()));
+            // printSet(finalSet);
+            // cout << endl;
+            follows.find(itr5->first)->second = finalSet;
+        }
+        for(itr6 = auxFollows.begin(); itr6 != auxFollows.end(); itr6++){
+            if(itr6->second == itr5->first){
+                itr5 = itr6;
+                break;
+            }
+        }
+    }
+        
+    
+    return follows;
+}
+
+string isLLOne (map<string, set<string> > firsts){
+    bool isLLOneResult = true;
+    map<string, set<string> >::iterator itr;
+    for (itr = firsts.begin(); itr != firsts.end(); itr++)
+    {
+        set<string>::iterator itr2;
+        set<string> set = itr->second;
+        for(itr2 = set.begin(); itr2 != set.end(); itr2++){
+            if(*itr2 == "ϵ"){
+                isLLOneResult = false;
+                break;
+            }
+        }
+    }
+    return isLLOneResult ? "Yes" : "No";
+
+}
 
 // Escanea un caracter a la vez
 void Scanner(string &filePath)
@@ -149,16 +548,25 @@ void Scanner(string &filePath)
     bool isReadingWord = false;
     bool isReadingNumber = false;
     bool isReadingOperator = false;
+    string isLLOneResult;
     string wordAux = "";
     string opAux = "";
     int v = 0;
     int it = 0;
     map<string, Token> nonFinals;
     map<string, Token> finals;
+    map<string, vector<string> > productions;
+    map<string, set<string> > firsts;
+    map<string, set<string> > follows;
     fstream fin(filePath, fstream::in);
+
+    // Auxiliar variables for productions
+    string production = "";
+    vector<string> productionVector;
 
     while (fin >> noskipws >> ch)
     {
+
         if (line == 0)
         {
             line++;
@@ -182,7 +590,6 @@ void Scanner(string &filePath)
             else
             {
                 Number n(v);
-                // n.toStringNumber();
                 isReadingNumber = false;
                 v = 0;
             }
@@ -200,15 +607,25 @@ void Scanner(string &filePath)
                 // w.toStringWord();
                 if (it == 0)
                 {
+                    if(line == 2){
+                        initial = wordAux;
+                    }
                     // add non final
                     pair<string, Token> p1 = make_pair(wordAux, w);
                     nonFinals.insert(p1);
                     it = 1;
+                    production = wordAux;
+                    auto it = productions.find(production);
+                    if (production == it->first)
+                    {
+                        productionVector = it->second;
+                    }
                 }
                 else
                 {
                     pair<string, Token> p1 = make_pair(wordAux, w);
                     finals.insert(p1);
+                    productionVector.push_back(wordAux);
                 }
                 isReadingWord = false;
                 wordAux = "";
@@ -234,6 +651,7 @@ void Scanner(string &filePath)
                 // t.toStringToken();
                 pair<string, Token> p1 = make_pair(opAux, t);
                 finals.insert(p1);
+                productionVector.push_back(opAux);
                 isReadingOperator = false;
                 opAux = "";
             }
@@ -244,9 +662,9 @@ void Scanner(string &filePath)
             {
                 opAux.pop_back();
                 Token t = Token(opAux);
-                // t.toStringToken();
                 pair<string, Token> p1 = make_pair(opAux, t);
                 finals.insert(p1);
+                productionVector.push_back(opAux);
                 isReadingOperator = false;
                 opAux = "";
             }
@@ -254,8 +672,8 @@ void Scanner(string &filePath)
             string aux;
             aux.push_back(ch);
             Token t = Token(aux);
-            // t.toStringToken();
             pair<string, Token> p1 = make_pair(aux, t);
+            productionVector.push_back(aux);
             finals.insert(p1);
             isReadingOperator = false;
             opAux = "";
@@ -266,6 +684,24 @@ void Scanner(string &filePath)
             clear(isReadingWord, isReadingNumber, wordAux, v, isReadingOperator, opAux);
             line = line + 1;
             it = 0;
+            productionVector.push_back("->");
+            // pair
+            if (productions.count(production) > 0)
+            {
+                auto it = productions.find(production);
+                it->second = productionVector;
+            }
+            else
+            {
+                pair<string, vector<string> > p1 = make_pair(production, productionVector);
+                productions.insert(p1);
+            }
+            // cout << "New production: ." << production <<"."<< endl;
+            // print(productionVector);
+            // cout << endl;
+            // clean aux helpers
+            production = "";
+            productionVector.clear();
             // cout << "New Line" << endl;
         }
 
@@ -292,62 +728,84 @@ void Scanner(string &filePath)
             isReadingNumber = false;
         }
     }
+    // End while
     if (isReadingWord == true)
     {
         Word w = Word(wordAux, Tag::ID);
-        // w.toStringWord();
         pair<string, Token> p1 = make_pair(wordAux, w);
         finals.insert(p1);
+        auto it2 = productions.find(production);
+        if (it2 != productions.end()){
+            productionVector = it2->second;
+            productionVector.push_back(wordAux);
+            it2->second = productionVector;
+        }
+        // pair<string, vector<string> > p1 = make_pair(wordAux, productionVector);
+        
+
     }
     else if (isReadingNumber == true)
     {
         Number n(v);
-        // n.toStringNumber();
     }
     else
     {
         Token t = Token(opAux);
-        // t.toStringToken();
+        auto it2 = productions.find(production);
+        if (it2 != productions.end()){
+            it2->second = productionVector;
+        }
     }
 
     // PRINTING non terminals
-    map<string, Token>::iterator itr;
+    map<string, vector<string> >::iterator itr;
     int i = 0;
     int total = 0;
-
-    // PRINTING terminals
-    cout << "Terminal: ";
-    for (itr = finals.begin(); itr != finals.end(); itr++)
+    finals = deleteDuplicates(finals, nonFinals);
+    cout << "Productions: ";
+    for (itr = productions.begin(); itr != productions.end(); itr++)
     {
-
-        if (nonFinals.find(itr->first) != nonFinals.end())
-        {
-            total++;
-            continue;
-        }
-        cout << itr->first;
-        if (i < finals.size() - total - 1)
-        {
-            cout << ", ";
-        }
-        i++;
+        cout << itr->first << ": " << endl;
+        print(itr->second);
+        cout << endl;
+    }
+    cout << endl;
+    map<string, Token >::iterator itr2;
+    cout << "Terminal"<<endl;
+    for (itr2 = finals.begin(); itr2 != finals.end(); itr2++)
+    {
+        cout << itr2->first << " " ;
+    }
+    cout << endl;
+    firsts = foundFirsts(productions, firsts, finals);
+    map<string, set<string> >::iterator itr3;
+    cout << "Firsts: "<< firsts.size() << endl;
+    for (itr3 = firsts.begin(); itr3 != firsts.end(); itr3++)
+    {
+        cout << itr3->first << ": " << endl;
+        printSet(itr3->second);
+        cout << endl;
+    }
+    cout << endl;
+    follows = foundFollows(productions,follows,firsts,nonFinals,finals);
+    // Agregar que es follow de algo tipo E -> EPRIME
+    // asi al final de todo agregamos los follows despues de los iteradores
+    // primero se llena con la forma de abajo y la inicial
+    // y con lo que queda vemos cual no tiene un auxfollow y asi vanos llenando
+    map<string, set<string> >::iterator itr4;
+    cout << "Follows: "<< follows.size() << endl;
+    for (itr4 = follows.begin(); itr4 != follows.end(); itr4++)
+    {
+        cout << itr4->first << ": " << endl;
+        printSet(itr4->second);
+        cout << endl;
     }
     cout << endl;
 
-    i = 0;
-    map<string, Token>::iterator itr2;
-    cout << "Non terminal: ";
-    for (itr2 = nonFinals.begin(); itr2 != nonFinals.end(); itr2++)
-    {
-        cout << itr2->first;
+    isLLOneResult = isLLOne(firsts);
+    cout << "LL(1): "<< isLLOneResult <<endl;
 
-        if (i < nonFinals.size() - 1)
-        {
-            cout << ", ";
-        }
-        i++;
-    }
-    cout << endl;
+
 }
 
 int main(int argc, char *argv[])
