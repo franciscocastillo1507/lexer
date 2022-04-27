@@ -151,8 +151,15 @@ void print(std::vector<string> const &input)
 }
 void printSet(std::set<string> const &input)
 {
-    for (auto it = input.begin(); it != input.end(); it++)
-        cout << *it << " ";
+    int i = 0;
+    for (auto it = input.begin(); it != input.end(); it++){
+        cout << *it;
+        if(i < input.size()-1){
+            cout << ", ";
+        }
+        i++;
+    }
+        
 }
 map<string, set<string> > foundFirsts(
     map<string, vector<string> > production, map<string, set<string> > firsts, map<string, Token> finals)
@@ -762,48 +769,36 @@ void Scanner(string &filePath)
     int i = 0;
     int total = 0;
     finals = deleteDuplicates(finals, nonFinals);
-    cout << "Productions: ";
-    for (itr = productions.begin(); itr != productions.end(); itr++)
-    {
-        cout << itr->first << ": " << endl;
-        print(itr->second);
-        cout << endl;
-    }
-    cout << endl;
-    map<string, Token >::iterator itr2;
-    cout << "Terminal"<<endl;
-    for (itr2 = finals.begin(); itr2 != finals.end(); itr2++)
-    {
-        cout << itr2->first << " " ;
-    }
-    cout << endl;
-    firsts = foundFirsts(productions, firsts, finals);
-    map<string, set<string> >::iterator itr3;
-    cout << "Firsts: "<< firsts.size() << endl;
-    for (itr3 = firsts.begin(); itr3 != firsts.end(); itr3++)
-    {
-        cout << itr3->first << ": " << endl;
-        printSet(itr3->second);
-        cout << endl;
-    }
-    cout << endl;
-    follows = foundFollows(productions,follows,firsts,nonFinals,finals);
-    // Agregar que es follow de algo tipo E -> EPRIME
-    // asi al final de todo agregamos los follows despues de los iteradores
-    // primero se llena con la forma de abajo y la inicial
-    // y con lo que queda vemos cual no tiene un auxfollow y asi vanos llenando
-    map<string, set<string> >::iterator itr4;
-    cout << "Follows: "<< follows.size() << endl;
-    for (itr4 = follows.begin(); itr4 != follows.end(); itr4++)
-    {
-        cout << itr4->first << ": " << endl;
-        printSet(itr4->second);
-        cout << endl;
-    }
-    cout << endl;
 
+    // cout << "Productions: ";
+    // for (itr = productions.begin(); itr != productions.end(); itr++)
+    // {
+    //     cout << itr->first << ": " << endl;
+    //     print(itr->second);
+    //     cout << endl;
+    // }
+    // cout << endl;
+    // map<string, Token >::iterator itr2;
+    // cout << "Terminal"<<endl;
+    // for (itr2 = finals.begin(); itr2 != finals.end(); itr2++)
+    // {
+    //     cout << itr2->first << " " ;
+    // }
+
+    firsts = foundFirsts(productions, firsts, finals);
+    follows = foundFollows(productions,follows,firsts,nonFinals,finals);
+    map<string, set<string> >::iterator itr3;
+    map<string, set<string> >::iterator itr4;
+    for (itr3  = firsts.begin(), itr4  = follows.begin(); itr3 != firsts.end(), itr4 != follows.end(); itr3++, itr4++)
+    {
+        cout << itr3->first << " =>  FIRST = {";
+        printSet(itr3->second); 
+        cout << "}, FOLLOW = {";
+        printSet(itr4->second); 
+        cout << "}" << endl;
+    }
     isLLOneResult = isLLOne(firsts);
-    cout << "LL(1): "<< isLLOneResult <<endl;
+    cout << "LL(1)? "<< isLLOneResult <<endl;
 
 
 }
