@@ -15,6 +15,7 @@
 
 using namespace std;
 string initial = "";
+bool isLLOneResultRepeat = false;
 // Class Tag
 class Tag
 {
@@ -179,21 +180,27 @@ map<string, set<string> > foundFirsts(
         bool isArrowOn = false;
         string auxString = vectorFirst.front();
         string pendingNF = "";
-
+        
         if (finals.find(auxString) != finals.end())
         {
             vector<string>::iterator itrAux;
-            map<string, Token>::iterator aux;
-            firstVector.insert(auxString);
+            map<string, Token>::iterator aux;if((firstVector.insert(auxString)).second == false) { isLLOneResultRepeat = true; }else{
+
+                            firstVector.insert(auxString);
+                        }
             isArrowOn = true;
             for (itrAux = vectorFirst.begin(); itrAux != vectorFirst.end(); itrAux++)
             {
                 auxString = *itrAux;
+                
                 if (isArrowOn == false)
                 {
                     if (finals.find(auxString) != finals.end())
                     {
-                        firstVector.insert(auxString);
+                        if((firstVector.insert(auxString)).second == false) {  isLLOneResultRepeat = true; }else{
+
+                            firstVector.insert(auxString);
+                        }
                         isArrowOn = true;
                     }else{
                         if (auxString != "->")
@@ -237,7 +244,10 @@ map<string, set<string> > foundFirsts(
                     {
                         if (finals.find(auxString) != finals.end())
                         {
+                        if((firstVector.insert(auxString)).second == false) { isLLOneResultRepeat = true; }else{
+
                             firstVector.insert(auxString);
+                        }    
                             isSecArrowOn = true;
                         }
                     }
@@ -281,7 +291,10 @@ map<string, set<string> > foundFirsts(
                 {
                     if (finals.find(auxString) != finals.end())
                     {
-                        firstVector.insert(auxString);
+                        if((firstVector.insert(auxString)).second == false) {  isLLOneResultRepeat = true; }else{
+
+                            firstVector.insert(auxString);
+                        } 
                         isSecArrowOn = true;
                     }else{
                         if (auxString != "->")
@@ -331,7 +344,10 @@ map<string, set<string> > foundFirsts(
                     {
                         if (finals.find(auxString) != finals.end())
                         {
+                        if((firstVector.insert(auxString)).second == false) {  isLLOneResultRepeat = true; }else{
+
                             firstVector.insert(auxString);
+                        }
                             isSecArrowOn = true;
                         }
                     }
@@ -347,7 +363,15 @@ map<string, set<string> > foundFirsts(
         }
             pair<string, set<string> > p1 = make_pair(itr->first, firstVector);
             firsts.insert(p1);
-        }
+        }else {
+                if(auxString == "->"){
+                        firstVector.insert("ϵ");
+                        pair<string, set<string> > p1 = make_pair(itr->first, firstVector);
+                        firsts.insert(p1);
+                        firstVector.clear();
+                        continue;
+                    }
+                }
     }
     return firsts;
 }
@@ -418,12 +442,25 @@ map<string, set<string> > foundFollows(
                 if(counter == 1){
                     auto nx = next(itrVec, 1);
                     if(*nx == "->" && nonFinals.find(*itrVec) != nonFinals.end()){
+                        // cout << "aqui "<< *itrVec << " "<< itr->first << endl;
                         // include in the other
                         pair<string, string > p1 = make_pair(*itrVec,itr->first);
                         auxFollows.insert(p1);
                         
-                    }else{
-                        continue;
+                    }else if(itr->first == *itrVec && finals.find(*nx) != finals.end()){
+                        if(follows.find(*itrVec) != follows.end()){
+                            set<string> foundFollowSet = follows.find(*itrVec)->second;
+                            foundFollowSet.erase("ϵ");
+                            foundFollowSet.insert(*nx);
+                            follows.find(*itrVec)->second = foundFollowSet;
+                        }else{
+                            followsSet.insert(*nx);
+                            followsSet.erase("ϵ");
+                            pair<string, set<string> > p1 = make_pair(itr->first, followsSet);
+                            follows.insert(p1);
+                            followsSet.clear();
+                        }
+                        
                     }
                 }
                 if(counter == 2){
@@ -431,7 +468,7 @@ map<string, set<string> > foundFollows(
                         hasFormaAb = true;
                     }
                     auto nx = next(itrVec, 1);
-                    if(*nx == "->"){
+                    if(*nx == "->" && *itrVec != itr->first){
                         // FORM B -> a A [e] | Follow(A) = Follow(B)
                         // itr->first -> a *itrVec
                         // Follow(*itrVec) -> Fol (itr->first)
@@ -483,12 +520,21 @@ map<string, set<string> > foundFollows(
             }
     }
 
-    //get first
-    map<string, string>::iterator itr5 = auxFollows.begin();
+    map<string, string>::iterator itr2;
+    map<string, string>::iterator itr5;
     map<string, string>::iterator itr6;
+    for (itr2 = auxFollows.begin(); itr2 != auxFollows.end(); itr2++)
+    {
+        // cout << "Map Key: " << itr2->first << ", v: " << itr2->second << endl;
+         if(itr2->second == initial){
+             itr5 = itr2;
+        }else{
+            itr5 = auxFollows.begin();
+        }
+    }
+    //get first
     int auxFollowsSize = auxFollows.size();
     for (int i = 0; i < auxFollowsSize; i++){
-        // cout << "Map Key: " << itr5->first << ", v: " << itr5->second << endl;
         auto it2 = follows.find(itr5->first);
         set<string> finalSet;
         if (it2 == follows.end()){
@@ -527,20 +573,38 @@ map<string, set<string> > foundFollows(
     return follows;
 }
 
-string isLLOne (map<string, set<string> > firsts){
+string isLLOne (map<string, set<string> > firsts, map<string, set<string> > follows){
     bool isLLOneResult = true;
     map<string, set<string> >::iterator itr;
-    for (itr = firsts.begin(); itr != firsts.end(); itr++)
+    map<string, set<string> >::iterator itr2;
+    for (itr = firsts.begin(), itr2 = follows.begin(); itr != firsts.end(), itr2 != follows.end(); itr++, itr2++)
     {
-        set<string>::iterator itr2;
+        set<string>::iterator itr3;
+        set<string>::iterator itr4;
+        set<string> setFollows = itr2->second;
         set<string> set = itr->second;
-        for(itr2 = set.begin(); itr2 != set.end(); itr2++){
-            if(*itr2 == "ϵ"){
-                isLLOneResult = false;
-                break;
+        if(set.find("ϵ") != set.end()){
+            for(itr3 = set.begin(); itr3 != set.end(); itr3++){
+                for(itr4 = setFollows.begin(); itr4 != setFollows.end(); itr4++){
+                    if(*itr3 == *itr4){
+                        isLLOneResult = false;
+                    }
+                }
             }
         }
     }
+
+
+    map<string, set<string> >::iterator itr5;
+    map<string, set<string> >::iterator itr6 = firsts.begin();
+    bool firstRule = true;
+    for (itr5 = firsts.begin(); itr5 != firsts.end();itr5++){
+        if(itr5-> second != itr6->second){
+            firstRule = false;
+        }
+    }
+    if(firstRule == true) return "No";
+    if(isLLOneResultRepeat == true) return "No";
     return isLLOneResult ? "Yes" : "No";
 
 }
@@ -789,7 +853,10 @@ void Scanner(string &filePath)
     follows = foundFollows(productions,follows,firsts,nonFinals,finals);
     map<string, set<string> >::iterator itr3;
     map<string, set<string> >::iterator itr4;
+    // cout << "Size: " << firsts.size() << " " << follows.size() <<endl;
     for (itr3  = firsts.begin(), itr4  = follows.begin(); itr3 != firsts.end(), itr4 != follows.end(); itr3++, itr4++)
+        // for (itr3  = firsts.begin(); itr3 != firsts.end(); itr3++)
+
     {
         cout << itr3->first << " =>  FIRST = {";
         printSet(itr3->second); 
@@ -797,7 +864,7 @@ void Scanner(string &filePath)
         printSet(itr4->second); 
         cout << "}" << endl;
     }
-    isLLOneResult = isLLOne(firsts);
+    isLLOneResult = isLLOne(firsts,follows);
     cout << "LL(1)? "<< isLLOneResult <<endl;
 
 
