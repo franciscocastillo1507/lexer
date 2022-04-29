@@ -11,7 +11,7 @@ En el cual obtiene o actualiza g++ para despues compilar el programa lexico.cpp 
 *o en caso de tener problemas compilar de la siguiente manera: g++ lexico.cpp, correr la salida ./a.out [nombre del archivo]
 
 ## Descripción
-Dada una gramática en EBNF, imprimir el listado de terminales y no terminales de la gramática.
+Dada una gramática en EBNF, imprimir el listado de first y follows de la gramática asi como si es una gramática LL(1).
 
 ## Entrada
 
@@ -42,10 +42,10 @@ Los caracteres válidos para un identificador son [ A..Z, a..z, _, - ]. El símb
 ϵ se representa con la cadena ' '.
 
 ## Salida
-Imprimir el conjunto de terminales y no terminales.
+Imprimir el conjunto de firsts y follows, además de si es una gramática LL(1).
 
-Terminales: a, b, (, )
-
-
-No terminales: goal, A, two
+goal => FIRST = {(, a, b}, FOLLOW = {$}<br>
+A => FIRST = {(, a, b}, FOLLOW = {$, )}<br>
+two => FIRST = {a, b}, FOLLOW = {$, )}<br>
+LL(1)? Yes<br>
 
