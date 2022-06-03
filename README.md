@@ -11,41 +11,32 @@ En el cual obtiene o actualiza g++ para despues compilar el programa lexico.cpp 
 *o en caso de tener problemas compilar de la siguiente manera: g++ lexico.cpp, correr la salida ./a.out [nombre del archivo]
 
 ## Descripción
-Dada una gramática en EBNF, imprimir el listado de first y follows de la gramática asi como si es una gramática LL(1).
+En esta última entrega, deberás desarrollar, de forma individual, una herramienta un analizador sintáctico LL(1). El programa recibe como entrada un archivo de texto conteniendo la gramática y una serie de cadenas a analizar. La salida será la tabla de análisis LL(1) e indica cuáles cadenas han sido aceptadas o no. Este proceso se realiza siempre y cuando la gramática sea LL(1). En caso de recibir una gramática que no sea LL(1), el programa deberá terminar e indicar el error en consola.
 
 ## Entrada
 
-La lectura tanto de las producciones como el total de las mismas se hace desde el programa al obtener el archivo test, el usuario solo debe de poner el nombre del archivo con lo requisitos anteriores mencionados.
+La primera línea del archivo de entrada contiene dos números enteros, N y M, que representan el número de producciones y el número de cadenas a analizar, respectivamente. Las siguientes N líneas contienen las diferentes producción en el mismo formato usado para las entregas anteriores. A continuación, las siguiente M líneas contienen las cadenas analizar.
 
 Ejemplo:
-./lexico.sh input1.txt
+./lexico.sh test.txt
 
-input1.txt =
-
-5 <br>
-goal -> A<br>
+test.txt =
+<br>
+goal -> A <br>
 A -> ( A )<br>
 A -> two<br>
 two -> a<br>
 two -> b<br>
+( ( a ) )<br>
+( a ) )<br>
+( ( ( ( ( b ) ) ) ) )<br>
+( ( ( ( ( a b ) ) ) ) )<br>
 
-La primera línea contiene un número entero, N, que indica el número de producciones a analizar. El formato de las producciones es el siguiente:
-
-id -> letra (letra | dígito)*
-
-Restricciones a considerar:
-
-El analizador léxico es sensible a minúsculas y mayúsculas. Es decir, que A es diferente de a.
-“->” separa el no terminal del encabezado de la producción del cuerpo de la misma.
-Asegúrate de colocar espacios entre las cosas que no deseas leer como un sólo símbolo. Por ejemplo ( A ) != (A).
-Los caracteres válidos para un identificador son [ A..Z, a..z, _, - ]. El símbolo 
-ϵ se representa con la cadena ' '.
 
 ## Salida
-Imprimir el conjunto de firsts y follows, además de si es una gramática LL(1).
+La tabla de análisis LL(1). Además, para cada una de las cadenas, deberá indicar si la cadena es aceptada o no. 
 
-goal => FIRST = {(, a, b}, FOLLOW = {$}<br>
-A => FIRST = {(, a, b}, FOLLOW = {$, )}<br>
-two => FIRST = {a, b}, FOLLOW = {$, )}<br>
-LL(1)? Yes<br>
+<img width="906" alt="Screenshot 2022-06-03 at 11 52 33" src="https://user-images.githubusercontent.com/54192394/171910262-03dd1419-0f2f-4212-8307-26dc88933b9b.png">
+
+
 
