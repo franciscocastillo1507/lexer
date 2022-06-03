@@ -1318,20 +1318,20 @@ void Scanner(string &filePath)
     map<string, set<string> >::iterator itr3;
     map<string, set<string> >::iterator itr4;
     // cout << "Size: " << firsts.size() << " " << follows.size() <<endl;
-    for (itr3 = firsts.begin(), itr4 = follows.begin(); itr3 != firsts.end(), itr4 != follows.end(); itr3++, itr4++)
+    // for (itr3 = firsts.begin(), itr4 = follows.begin(); itr3 != firsts.end(), itr4 != follows.end(); itr3++, itr4++)
     // for (itr3  = firsts.begin(); itr3 != firsts.end(); itr3++)
 
-    {
-        cout << itr3->first << " =>  FIRST = {";
-        printSet(itr3->second);
-        cout << "}, FOLLOW = {";
-        printSet(itr4->second);
-        cout << "}" << endl;
-    }
+    // {
+    //     cout << itr3->first << " =>  FIRST = {";
+    //     printSet(itr3->second);
+    //     cout << "}, FOLLOW = {";
+    //     printSet(itr4->second);
+    //     cout << "}" << endl;
+    // }
     isLLOneResult = isLLOne(firsts, follows);
-    cout << "LL(1)? " << isLLOneResult << endl;
+    // cout << "LL(1)? " << isLLOneResult << endl;
     if(isLLOneResult == "No"){
-        cout << "Grammar is not LL(1)!" << endl;
+        cout << "Grammar is not LL(1)!" << endl << endl << endl;
     }
     generateTableLLOne(productions,firsts,follows,nonFinals,finals, productionsTests);
 }
